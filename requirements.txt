@@ -1,0 +1,26 @@
+# Django Core
+django>=6.0.0
+djangorestframework>=3.17.0
+django-cors-headers>=4.9.0
+
+# Authentication
+djangorestframework-simplejwt>=5.5.0
+
+# Markdown & Security
+markdown>=3.10.0
+bleach>=6.3.0
+
+# Image Processing
+pillow>=12.2.0
+
+# Cache
+django-redis>=6.0.0
+
+# API Documentation
+drf-spectacular>=0.29.0
+
+# Database (Production)
+psycopg2-binary>=2.9.0
+
+# Filtering
+django-filter>=25.2

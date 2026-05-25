@@ -1,0 +1,897 @@
+openapi: 3.0.3
+info:
+  title: 个人博客 API
+  version: 1.0.0
+  description: 基于 Django + DRF + Vue3 的个人博客系统 API 文档
+paths:
+  /api/articles/:
+    get:
+      operationId: articles_list
+      description: 文章列表视图（支持分页、搜索、过滤）
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: 用于排序结果的字段。
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: 搜索关键词。
+        schema:
+          type: string
+      tags:
+      - articles
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedArticleListList'
+          description: ''
+  /api/articles/{id}/:
+    get:
+      operationId: articles_retrieve
+      description: 文章详情视图
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - articles
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+          description: ''
+  /api/articles/{id}/delete/:
+    delete:
+      operationId: articles_delete_destroy
+      description: 删除文章视图
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - articles
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/articles/{id}/update/:
+    put:
+      operationId: articles_update_update
+      description: 更新文章视图
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - articles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ArticleCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleCreate'
+          description: ''
+    patch:
+      operationId: articles_update_partial_update
+      description: 更新文章视图
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - articles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedArticleCreateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleCreate'
+          description: ''
+  /api/articles/create/:
+    post:
+      operationId: articles_create_create
+      description: 创建文章视图
+      tags:
+      - articles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ArticleCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ArticleCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleCreate'
+          description: ''
+  /api/articles/upload-image/:
+    post:
+      operationId: articles_upload_image_create
+      description: 图片上传视图
+      tags:
+      - articles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/profile/:
+    get:
+      operationId: auth_profile_retrieve
+      description: 用户个人信息视图
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: auth_profile_update
+      description: 用户个人信息视图
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: auth_profile_partial_update
+      description: 用户个人信息视图
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/register/:
+    post:
+      operationId: auth_register_create
+      description: 用户注册视图
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/auth/token/:
+    post:
+      operationId: auth_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/comments/{id}/delete/:
+    delete:
+      operationId: comments_delete_destroy
+      description: 删除评论（仅作者或管理员）
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - comments
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/comments/article/{article_id}/:
+    get:
+      operationId: comments_article_list
+      description: 获取某文章的评论列表
+      parameters:
+      - in: path
+        name: article_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: 分页结果集中的页码。
+        schema:
+          type: integer
+      tags:
+      - comments
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCommentList'
+          description: ''
+  /api/comments/create/:
+    post:
+      operationId: comments_create_create
+      description: 创建评论
+      tags:
+      - comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentCreate'
+          description: ''
+components:
+  schemas:
+    ArticleCreate:
+      type: object
+      description: 文章创建序列化器
+      properties:
+        title:
+          type: string
+          title: 标题
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 200
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          title: Markdown内容
+        cover:
+          type: string
+          format: uri
+          nullable: true
+          title: 封面图片
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          title: 状态
+      required:
+      - content
+      - title
+    ArticleCreateRequest:
+      type: object
+      description: 文章创建序列化器
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: 标题
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 200
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 1
+          title: Markdown内容
+        cover:
+          type: string
+          format: binary
+          nullable: true
+          title: 封面图片
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          title: 状态
+      required:
+      - content
+      - title
+    ArticleDetail:
+      type: object
+      description: 文章详情序列化器
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: 标题
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 200
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          title: Markdown内容
+        content_html:
+          type: string
+          readOnly: true
+          title: HTML内容
+        summary:
+          type: string
+          title: 摘要
+        cover:
+          type: string
+          format: uri
+          nullable: true
+        author_name:
+          type: string
+          readOnly: true
+        views:
+          type: integer
+          readOnly: true
+          title: 阅读量
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          title: 状态
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+      required:
+      - author_name
+      - content
+      - content_html
+      - created_at
+      - id
+      - title
+      - updated_at
+      - views
+    ArticleList:
+      type: object
+      description: 文章列表序列化器（轻量级）
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          title: 标题
+          maxLength: 200
+        summary:
+          type: string
+          title: 摘要
+        cover:
+          type: string
+          format: uri
+          nullable: true
+          title: 封面图片
+        author_name:
+          type: string
+          readOnly: true
+        views:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          title: 阅读量
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+      required:
+      - author_name
+      - created_at
+      - id
+      - title
+      - updated_at
+    Comment:
+      type: object
+      description: 评论序列化器
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        article:
+          type: integer
+          title: 文章
+        parent:
+          type: integer
+          nullable: true
+          title: 父评论
+        content:
+          type: string
+          title: 内容
+        author_name:
+          type: string
+          readOnly: true
+        is_approved:
+          type: boolean
+          readOnly: true
+          title: 已审核
+        replies_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 创建时间
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: 更新时间
+      required:
+      - article
+      - author_name
+      - content
+      - created_at
+      - id
+      - is_approved
+      - replies_count
+      - updated_at
+    CommentCreate:
+      type: object
+      description: 评论创建序列化器
+      properties:
+        article:
+          type: integer
+          title: 文章
+        parent:
+          type: integer
+          nullable: true
+          title: 父评论
+        content:
+          type: string
+          title: 内容
+      required:
+      - article
+      - content
+    CommentCreateRequest:
+      type: object
+      description: 评论创建序列化器
+      properties:
+        article:
+          type: integer
+          title: 文章
+        parent:
+          type: integer
+          nullable: true
+          title: 父评论
+        content:
+          type: string
+          minLength: 1
+          title: 内容
+      required:
+      - article
+      - content
+    PaginatedArticleListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleList'
+    PaginatedCommentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+    PatchedArticleCreateRequest:
+      type: object
+      description: 文章创建序列化器
+      properties:
+        title:
+          type: string
+          minLength: 1
+          title: 标题
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 200
+          pattern: ^[-a-zA-Z0-9_]+$
+        content:
+          type: string
+          minLength: 1
+          title: Markdown内容
+        cover:
+          type: string
+          format: binary
+          nullable: true
+          title: 封面图片
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          title: 状态
+    PatchedUserRequest:
+      type: object
+      description: 用户信息序列化器
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: 电子邮件地址
+          maxLength: 254
+        first_name:
+          type: string
+          title: 名字
+          maxLength: 150
+        last_name:
+          type: string
+          title: 姓氏
+          maxLength: 150
+    Register:
+      type: object
+      description: 用户注册序列化器
+      properties:
+        username:
+          type: string
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+      required:
+      - email
+      - username
+    RegisterRequest:
+      type: object
+      description: 用户注册序列化器
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password2:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+      - password2
+      - username
+    StatusEnum:
+      enum:
+      - draft
+      - published
+      type: string
+      description: |-
+        * `draft` - 草稿
+        * `published` - 已发布
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    User:
+      type: object
+      description: 用户信息序列化器
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: 电子邮件地址
+          maxLength: 254
+        first_name:
+          type: string
+          title: 名字
+          maxLength: 150
+        last_name:
+          type: string
+          title: 姓氏
+          maxLength: 150
+      required:
+      - id
+      - username
+    UserRequest:
+      type: object
+      description: 用户信息序列化器
+      properties:
+        username:
+          type: string
+          minLength: 1
+          title: 用户名
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: 电子邮件地址
+          maxLength: 254
+        first_name:
+          type: string
+          title: 名字
+          maxLength: 150
+        last_name:
+          type: string
+          title: 姓氏
+          maxLength: 150
+      required:
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
